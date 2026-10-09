@@ -1,0 +1,66 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+issueTrackerURL = "${mod_issues_url}"
+
+[[mixins]]
+config = "diesel_x_stellaris.mixins.json"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+displayURL = "${mod_url}"
+logoFile = "logo.png"
+authors = "${mod_authors}"
+credits = "Built on Create (simibubi and the Create team), Create: Diesel Generators (George VI), Stellaris (The Stellaris Team), Potentials (Fej1Fun) and Architectury (shedaniel)."
+description = '''${mod_description}'''
+
+[[dependencies.diesel_x_stellaris]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "create"
+type = "required"
+versionRange = "[${create_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "createdieselgenerators"
+type = "required"
+versionRange = "[1,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "stellaris"
+type = "required"
+versionRange = "[${stellaris_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "architectury"
+type = "required"
+versionRange = "[${architectury_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.diesel_x_stellaris]]
+modId = "potentials"
+type = "required"
+versionRange = "[${potentials_version},)"
+ordering = "AFTER"
+side = "BOTH"

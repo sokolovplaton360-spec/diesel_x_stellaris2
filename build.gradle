@@ -1,0 +1,114 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.142'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// Fail early with a readable message instead of a cryptic compiler error.
+[stellaris_jar, architectury_jar, potentials_jar].each { jarName ->
+    if (!file("libs/${jarName}").exists()) {
+        throw new GradleException("Missing file libs/${jarName}. Put the three required jar files into the 'libs' folder (see gradle.properties).")
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.blamejared.com' } // JEI, only used when use_jei=true
+}
+
+neoForge {
+    version = project.neo_version
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+// Sets up the 'localRuntime' configuration (same line as in the official NeoForge MDK).
+// Dependencies declared with it are present for runClient/runServer but are not bundled or published.
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    // Needed to compile. They are NOT bundled into our jar.
+    compileOnly files("libs/${stellaris_jar}")
+    compileOnly files("libs/${architectury_jar}")
+    compileOnly files("libs/${potentials_jar}")
+
+    // Needed only for runClient / runServer from the IDE.
+    localRuntime files("libs/${stellaris_jar}")
+    localRuntime files("libs/${architectury_jar}")
+    localRuntime files("libs/${potentials_jar}")
+    [create_jar, cdg_jar].each { jarName ->
+        if (file("libs/${jarName}").exists()) {
+            localRuntime files("libs/${jarName}")
+        }
+    }
+
+    if (project.findProperty('use_jei') == 'true') {
+        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    }
+}
+
+// Expands ${...} placeholders in src/main/templates (neoforge.mods.toml). A missing property is an error.
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version_range: minecraft_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            create_version         : create_version,
+            stellaris_version      : stellaris_version,
+            architectury_version   : architectury_version,
+            potentials_version     : potentials_version,
+            mod_url                : mod_url,
+            mod_issues_url         : mod_issues_url
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+// Include the output of "generateModMetadata" as an input directory for the build.
+sourceSets.main.resources.srcDir generateModMetadata
+
+// Run it on every project reload in the IDE.
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

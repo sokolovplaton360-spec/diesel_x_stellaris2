@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " E ",
+    "PBP",
+    "SSS"
+  ],
+  "key": {
+    "E": {
+      "item": "create:electron_tube"
+    },
+    "P": {
+      "item": "createdieselgenerators:engine_piston"
+    },
+    "B": {
+      "item": "create:brass_sheet"
+    },
+    "S": {
+      "tag": "c:ingots/steel"
+    }
+  },
+  "result": {
+    "id": "diesel_x_stellaris:gasoline_engine_upgrade",
+    "count": 1
+  }
+}
